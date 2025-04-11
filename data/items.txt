@@ -26,3 +26,6 @@ id,name,category,dollars/kilogram
 25,False Hellebore,POISONOUS,0.0
 26,Fibercaps,POISONOUS,0.0
 27,Black Nightshade,POISONOUS,0
+28,Death Adder,POISONOUS,67
+29,Miner's Lettuce,EDIBLE,0.04
+30,1,MEDICINAL,13

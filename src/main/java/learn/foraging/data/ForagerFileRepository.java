@@ -2,17 +2,17 @@ package learn.foraging.data;
 
 import learn.foraging.models.Forager;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOError;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ForagerFileRepository implements ForagerRepository {
 
     private final String filePath;
+    private static final String HEADER = "id,first_name,last_name,state";
 
     public ForagerFileRepository(String filePath) {
         this.filePath = filePath;
@@ -52,6 +52,28 @@ public class ForagerFileRepository implements ForagerRepository {
                 .filter(i -> i.getState().equalsIgnoreCase(stateAbbr))
                 .collect(Collectors.toList());
     }
+
+    public Forager addForager(Forager forager) throws DataException {
+        if (forager == null) {
+            return null;
+        }
+
+        List<Forager> all = findAll();
+
+        forager.setId(String.valueOf(UUID.randomUUID()));
+        all.add(forager);
+        writeAll(all);
+
+        return forager;
+    }
+
+    private String serialize(Forager forager) {
+        return String.format("%s,%s,%s,%s",
+                forager.getId(),
+                forager.getFirstName(),
+                forager.getLastName(),
+                forager.getState());
+    }
     
     private Forager deserialize(String[] fields) {
         Forager result = new Forager();
@@ -60,5 +82,20 @@ public class ForagerFileRepository implements ForagerRepository {
         result.setLastName(fields[2]);
         result.setState(fields[3]);
         return result;
+    }
+
+    protected void writeAll(List<Forager> foragers) throws DataException {
+        try (PrintWriter writer = new PrintWriter(filePath)) {
+            writer.println(HEADER);
+            if (foragers == null) {
+                return;
+            }
+
+            for (Forager forager : foragers) {
+                writer.println(serialize(forager));
+            }
+        } catch (FileNotFoundException ex) {
+            throw new DataException(ex);
+        }
     }
 }

@@ -18,7 +18,7 @@ public class ConsoleIO {
             = "[INVALID] Enter a date in MM/dd/yyyy format.";
 
     private final Scanner scanner = new Scanner(System.in);
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     public void print(String message) {
         System.out.print(message);

@@ -30,9 +30,9 @@ public class ForageService {
     public List<Forage> findByDate(LocalDate date) {
 
         Map<String, Forager> foragerMap = foragerRepository.findAll().stream()
-                .collect(Collectors.toMap(i -> i.getId(), i -> i));
+                .collect(Collectors.toMap(Forager::getId, i -> i));
         Map<Integer, Item> itemMap = itemRepository.findAll().stream()
-                .collect(Collectors.toMap(i -> i.getId(), i -> i));
+                .collect(Collectors.toMap(Item::getId, i -> i));
 
         List<Forage> result = forageRepository.findByDate(date);
         for (Forage forage : result) {
