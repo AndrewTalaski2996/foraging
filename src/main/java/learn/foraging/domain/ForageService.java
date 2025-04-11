@@ -7,6 +7,7 @@ import learn.foraging.data.ItemRepository;
 import learn.foraging.models.Forage;
 import learn.foraging.models.Forager;
 import learn.foraging.models.Item;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+@Service
 public class ForageService {
 
     private final ForageRepository forageRepository;
@@ -150,10 +152,12 @@ public class ForageService {
 
     private void validateNotDuplicate(Forage forage, Result<Forage> result) {
 
-        for (Forage origFor : forageRepository.findByDate(forage.getDate())) {
-            if (origFor.getItem().equals(forage.getItem()) &&
-            origFor.getKilograms() == forage.getKilograms()) {
-                result.addErrorMessage("This might be a duplicate forage.");
+        for (Forage dupeForage : forageRepository.findByDate(forage.getDate())) {
+            if (dupeForage.getForager().getId().equalsIgnoreCase(forage.getForager().getId()) &&
+            dupeForage.getItem().getId() == forage.getItem().getId() &&
+            dupeForage.getKilograms() == forage.getKilograms()) {
+                result.addErrorMessage("Cannot add a duplicate Forage.");
+                return;
             }
         }
     }

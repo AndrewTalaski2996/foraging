@@ -1,20 +1,22 @@
 package learn.foraging.data;
 
 import learn.foraging.models.Forager;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Repository
 public class ForagerFileRepository implements ForagerRepository {
 
     private final String filePath;
     private static final String HEADER = "id,first_name,last_name,state";
 
-    public ForagerFileRepository(String filePath) {
+    public ForagerFileRepository(@Value("${foragerRepository}") String filePath) {
         this.filePath = filePath;
     }
 
@@ -53,6 +55,7 @@ public class ForagerFileRepository implements ForagerRepository {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public Forager addForager(Forager forager) throws DataException {
         if (forager == null) {
             return null;
