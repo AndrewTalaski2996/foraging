@@ -47,7 +47,7 @@ public class ForagerService {
         if (repository.findAll().stream().anyMatch(f -> f.getFirstName().equalsIgnoreCase(forager.getFirstName())) &&
         repository.findAll().stream().anyMatch(f -> f.getLastName().equalsIgnoreCase(forager.getLastName())) &&
         repository.findAll().stream().anyMatch(f -> f.getState().equalsIgnoreCase(forager.getState()))) {
-            result.addErrorMessage(String.format("Forager %s is a duplicate.", forager));
+            result.addErrorMessage(String.format("Forager %s %s is a duplicate.", forager.getFirstName(), forager.getLastName()));
         }
 
         if (!result.isSuccess()) {

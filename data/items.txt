@@ -29,3 +29,4 @@ id,name,category,dollars/kilogram
 28,Death Adder,POISONOUS,67
 29,Miner's Lettuce,EDIBLE,0.04
 30,1,MEDICINAL,13
+31,A,B,EDIBLE,1

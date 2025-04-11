@@ -45,11 +45,11 @@ public class Controller {
                 case VIEW_FORAGES_BY_DATE:
                     viewByDate();
                     break;
-                case VIEW_ITEMS:
-                    viewItems();
-                    break;
                 case VIEW_FORAGERS_BY_STATE:
                     viewForagersByState();
+                    break;
+                case VIEW_ITEMS:
+                    viewItems();
                     break;
                 case ADD_FORAGE:
                     addForage();
@@ -113,7 +113,7 @@ public class Controller {
         if (!result.isSuccess()) {
             view.displayStatus(false, result.getErrorMessages());
         } else {
-            String successMessage = String.format("Forage %s created.", result.getPayload().getId());
+            String successMessage = String.format("Forage %s created.", result.getPayload().getItem().getName());
             view.displayStatus(true, successMessage);
         }
     }
@@ -124,7 +124,7 @@ public class Controller {
         if (!result.isSuccess()) {
             view.displayStatus(false, result.getErrorMessages());
         } else {
-            String successMessage = String.format("Item %s created.", result.getPayload().getId());
+            String successMessage = String.format("Item %s created.", result.getPayload().getName());
             view.displayStatus(true, successMessage);
         }
     }

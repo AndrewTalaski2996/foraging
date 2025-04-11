@@ -98,6 +98,8 @@ public class ForageService {
 
         validateChildrenExist(forage, result);
 
+        validateNotDuplicate(forage, result);
+
         return result;
     }
 
@@ -143,6 +145,16 @@ public class ForageService {
 
         if (itemRepository.findById(forage.getItem().getId()) == null) {
             result.addErrorMessage("Item does not exist.");
+        }
+    }
+
+    private void validateNotDuplicate(Forage forage, Result<Forage> result) {
+
+        for (Forage origFor : forageRepository.findByDate(forage.getDate())) {
+            if (origFor.getItem().equals(forage.getItem()) &&
+            origFor.getKilograms() == forage.getKilograms()) {
+                result.addErrorMessage("This might be a duplicate forage.");
+            }
         }
     }
 }

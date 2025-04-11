@@ -44,6 +44,9 @@ public class ItemService {
         } else if (item.getDollarPerKilogram().compareTo(BigDecimal.ZERO) < 0
                 || item.getDollarPerKilogram().compareTo(new BigDecimal("7500.00")) > 0) {
             result.addErrorMessage("%/Kg must be between 0.00 and 7500.00.");
+        } else if ((item.getCategory().equals(Category.INEDIBLE) || item.getCategory().equals(Category.POISONOUS)) &&
+        item.getDollarPerKilogram().compareTo(BigDecimal.ZERO) > 0) {
+            result.addErrorMessage("Items with the INEDIBLE or POISONOUS category cannot have a $/Kg above 0.");
         }
 
         if (!result.isSuccess()) {
