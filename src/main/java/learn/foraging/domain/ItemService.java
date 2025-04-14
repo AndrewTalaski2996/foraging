@@ -54,6 +54,9 @@ public class ItemService {
         } else if (item.getCategory() != null && (item.getCategory().equals(Category.INEDIBLE) || item.getCategory().equals(Category.POISONOUS)) &&
         item.getDollarPerKilogram().compareTo(BigDecimal.ZERO) != 0) {
             result.addErrorMessage("Items with the INEDIBLE or POISONOUS category cannot have a $/Kg above 0.");
+        } else if (item.getCategory() != null && (item.getCategory().equals(Category.EDIBLE) || item.getCategory().equals(Category.MEDICINAL)) &&
+                item.getDollarPerKilogram().compareTo(BigDecimal.ZERO) <= 0) {
+            result.addErrorMessage("Items with the EDIBLE or MEDICINAL category must have a $/Kg above 0.");
         }
 
         if (!result.isSuccess()) {

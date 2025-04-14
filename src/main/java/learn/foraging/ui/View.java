@@ -158,7 +158,7 @@ public class View {
         forages.stream()
                 .collect(Collectors.groupingBy(f -> f.getItem().getCategory(),
                         Collectors.reducing(BigDecimal.ZERO, Forage::getValue, BigDecimal::add)))
-                .forEach((key, value) -> System.out.println(key + ": $" + value));
+                .forEach((key, value) -> System.out.printf("%s: $%.2f%n", key, value));
     }
 
     public GenerateRequest getGenerateRequest() {

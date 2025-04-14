@@ -99,6 +99,9 @@ public class ForageService {
         }
 
         validateChildrenExist(forage, result);
+        if (!result.isSuccess()) {
+            return result;
+        }
 
         validateNotDuplicate(forage, result);
 
@@ -154,8 +157,7 @@ public class ForageService {
 
         for (Forage dupeForage : forageRepository.findByDate(forage.getDate())) {
             if (dupeForage.getForager().getId().equalsIgnoreCase(forage.getForager().getId()) &&
-            dupeForage.getItem().getId() == forage.getItem().getId() &&
-            dupeForage.getKilograms() == forage.getKilograms()) {
+            dupeForage.getItem().getId() == forage.getItem().getId()) {
                 result.addErrorMessage("Cannot add a duplicate Forage.");
                 return;
             }

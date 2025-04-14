@@ -82,10 +82,10 @@ class ForageServiceTest {
         assertTrue(initial.isSuccess());
 
         Forage dupe = new Forage();
-        forage.setDate(LocalDate.now());
-        forage.setForager(ForagerRepositoryDouble.FORAGER);
-        forage.setItem(ItemRepositoryDouble.ITEM);
-        forage.setKilograms(0.5);
+        dupe.setDate(LocalDate.now());
+        dupe.setForager(ForagerRepositoryDouble.FORAGER);
+        dupe.setItem(ItemRepositoryDouble.ITEM);
+        dupe.setKilograms(0.5);
 
         Result<Forage> result = service.add(dupe);
         assertFalse(result.isSuccess());
