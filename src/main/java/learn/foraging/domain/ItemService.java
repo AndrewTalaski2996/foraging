@@ -43,6 +43,10 @@ public class ItemService {
             result.addErrorMessage(String.format("Item '%s' is a duplicate.", item.getName()));
         }
 
+        if (item.getName() != null && item.getName().contains(",")) {
+            result.addErrorMessage("Item name cannot have a comma in the name.");
+        }
+
         if (item.getCategory() == null) {
             result.addErrorMessage("Item Category is required.");
         }
