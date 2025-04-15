@@ -32,7 +32,7 @@ public class ForageFileRepository implements ForageRepository {
             reader.readLine(); // read header
 
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                    result.add(deserialize(line, date));
+                result.add(deserialize(line, date));
             }
         } catch (IOException ex) {
             // don't throw on read

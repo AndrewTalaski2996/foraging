@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,11 +36,11 @@ public class ItemService {
 
         if (item.getName() == null || item.getName().isBlank()) {
             result.addErrorMessage("Item name is required.");
-        } else if (repository.findAll().stream()
+        }
+        if (repository.findAll().stream()
+                .filter(Objects::nonNull)
                 .anyMatch(i -> i.getName().equalsIgnoreCase(item.getName()))) {
             result.addErrorMessage(String.format("Item '%s' is a duplicate.", item.getName()));
-        } else if (item.getName().contains(",")) {
-            result.addErrorMessage("Item name cannot have a comma in it.");
         }
 
         if (item.getCategory() == null) {

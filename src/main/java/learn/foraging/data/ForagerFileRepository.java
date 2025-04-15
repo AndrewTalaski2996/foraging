@@ -15,6 +15,8 @@ public class ForagerFileRepository implements ForagerRepository {
 
     private final String filePath;
     private static final String HEADER = "id,first_name,last_name,state";
+    private static final String DELIMITER = ",";
+    private static final String DELIMITER_REPLACEMENT = "@@@";
 
     public ForagerFileRepository(@Value("${foragerRepository}") String filePath) {
         this.filePath = filePath;
@@ -28,11 +30,7 @@ public class ForagerFileRepository implements ForagerRepository {
             reader.readLine(); // read header
 
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-
-                String[] fields = line.split(",", -1);
-                if (fields.length == 4) {
-                    result.add(deserialize(fields));
-                }
+                result.add(deserialize(line));
             }
         } catch (IOException ex) {
             // don't throw on read
@@ -71,28 +69,40 @@ public class ForagerFileRepository implements ForagerRepository {
     }
 
     private String serialize(Forager forager) {
-        return String.format("%s,%s,%s,%s",
-                forager.getId(),
-                forager.getFirstName(),
-                forager.getLastName(),
-                forager.getState());
+        StringBuffer buffer = new StringBuffer(100);
+        buffer.append(clean(forager.getId())).append(DELIMITER);
+        buffer.append(clean(forager.getFirstName())).append(DELIMITER);
+        buffer.append(clean(forager.getLastName())).append(DELIMITER);
+        buffer.append(clean(forager.getState())).append(DELIMITER);
+        return buffer.toString();
     }
     
-    private Forager deserialize(String[] fields) {
+    private Forager deserialize(String line) {
+        String[] fields = line.split(DELIMITER);
+
+        if (fields.length != 4) {
+            return null;
+        }
+
         Forager result = new Forager();
-        result.setId(fields[0]);
-        result.setFirstName(fields[1]);
-        result.setLastName(fields[2]);
-        result.setState(fields[3]);
+        result.setId(restore(fields[0]));
+        result.setFirstName(restore(fields[1]));
+        result.setLastName(restore(fields[2]));
+        result.setState(restore(fields[3]));
         return result;
     }
 
-    protected void writeAll(List<Forager> foragers) throws DataException {
+    private String restore(String value) {
+        return value.replace(DELIMITER_REPLACEMENT, DELIMITER);
+    }
+
+    private String clean(String value) {
+        return value.replace(DELIMITER, DELIMITER_REPLACEMENT);
+    }
+
+    private void writeAll(List<Forager> foragers) throws DataException {
         try (PrintWriter writer = new PrintWriter(filePath)) {
             writer.println(HEADER);
-            if (foragers == null) {
-                return;
-            }
 
             for (Forager forager : foragers) {
                 writer.println(serialize(forager));
