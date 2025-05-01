@@ -4,12 +4,15 @@ import learn.foraging.models.Category;
 import learn.foraging.models.Forage;
 import learn.foraging.models.Forager;
 import learn.foraging.models.Item;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Component
 public class View {
 
     private final ConsoleIO io;
@@ -44,7 +47,7 @@ public class View {
     }
 
     public Forager chooseForager(List<Forager> foragers) {
-        if (foragers.size() == 0) {
+        if (foragers.isEmpty()) {
             io.println("No foragers found");
             return null;
         }
@@ -79,11 +82,15 @@ public class View {
         return Category.values()[io.readInt(message, 1, index) - 1];
     }
 
+    public String getForagerState() {
+        return io.readRequiredString("What state do you want to search by?: ");
+    }
+
     public Item chooseItem(List<Item> items) {
 
         displayItems(items);
 
-        if (items.size() == 0) {
+        if (items.isEmpty()) {
             return null;
         }
 
@@ -101,6 +108,7 @@ public class View {
     }
 
     public Forage makeForage(Forager forager, Item item) {
+        displayHeader(MainMenuOption.ADD_FORAGE.getMessage());
         Forage forage = new Forage();
         forage.setForager(forager);
         forage.setItem(item);
@@ -110,6 +118,16 @@ public class View {
         return forage;
     }
 
+    public Forager makeForager() {
+        displayHeader(MainMenuOption.ADD_FORAGER.getMessage());
+        Forager forager = new Forager();
+        forager.setId(UUID.randomUUID().toString());
+        forager.setFirstName(io.readRequiredString("Forager's first name?: "));
+        forager.setLastName(io.readRequiredString("Forager's last name?: "));
+        forager.setState(io.readRequiredString("What state is the forager in?: "));
+        return forager;
+    }
+
     public Item makeItem() {
         displayHeader(MainMenuOption.ADD_ITEM.getMessage());
         Item item = new Item();
@@ -117,6 +135,30 @@ public class View {
         item.setName(io.readRequiredString("Item Name: "));
         item.setDollarPerKilogram(io.readBigDecimal("$/Kg: ", BigDecimal.ZERO, new BigDecimal("7500.00")));
         return item;
+    }
+
+    public void getKGPerForage(List<Forage> forages) {
+
+        if (forages == null || forages.isEmpty()) {
+            io.println("No forages found.");
+            return;
+        }
+
+        forages.stream()
+                .collect(Collectors.groupingBy(f -> f.getItem().getName(), Collectors.summingDouble(Forage::getKilograms)))
+                .forEach((key, value) -> io.println(String.format("%s: %.2f kg", key, value)));
+    }
+
+    public void getCategoryValue(List<Forage> forages) {
+        if (forages == null || forages.isEmpty()) {
+            io.println("No forages found");
+            return;
+        }
+
+        forages.stream()
+                .collect(Collectors.groupingBy(f -> f.getItem().getCategory(),
+                        Collectors.reducing(BigDecimal.ZERO, Forage::getValue, BigDecimal::add)))
+                .forEach((key, value) -> System.out.printf("%s: $%.2f%n", key, value));
     }
 
     public GenerateRequest getGenerateRequest() {
@@ -184,8 +226,7 @@ public class View {
     }
 
     public void displayItems(List<Item> items) {
-
-        if (items.size() == 0) {
+        if (items.isEmpty()) {
             io.println("No items found");
         }
 

@@ -4,11 +4,14 @@ import learn.foraging.data.DataException;
 import learn.foraging.data.ItemRepository;
 import learn.foraging.models.Category;
 import learn.foraging.models.Item;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Service
 public class ItemService {
 
     private final ItemRepository repository;
@@ -33,9 +36,19 @@ public class ItemService {
 
         if (item.getName() == null || item.getName().isBlank()) {
             result.addErrorMessage("Item name is required.");
-        } else if (repository.findAll().stream()
+        }
+        if (repository.findAll().stream()
+                .filter(Objects::nonNull)
                 .anyMatch(i -> i.getName().equalsIgnoreCase(item.getName()))) {
             result.addErrorMessage(String.format("Item '%s' is a duplicate.", item.getName()));
+        }
+
+        if (item.getName() != null && item.getName().contains(",")) {
+            result.addErrorMessage("Item name cannot have a comma in the name.");
+        }
+
+        if (item.getCategory() == null) {
+            result.addErrorMessage("Item Category is required.");
         }
 
         if (item.getDollarPerKilogram() == null) {
@@ -43,6 +56,12 @@ public class ItemService {
         } else if (item.getDollarPerKilogram().compareTo(BigDecimal.ZERO) < 0
                 || item.getDollarPerKilogram().compareTo(new BigDecimal("7500.00")) > 0) {
             result.addErrorMessage("%/Kg must be between 0.00 and 7500.00.");
+        } else if (item.getCategory() != null && (item.getCategory().equals(Category.INEDIBLE) || item.getCategory().equals(Category.POISONOUS)) &&
+        item.getDollarPerKilogram().compareTo(BigDecimal.ZERO) != 0) {
+            result.addErrorMessage("Items with the INEDIBLE or POISONOUS category cannot have a $/Kg above 0.");
+        } else if (item.getCategory() != null && (item.getCategory().equals(Category.EDIBLE) || item.getCategory().equals(Category.MEDICINAL)) &&
+                item.getDollarPerKilogram().compareTo(BigDecimal.ZERO) <= 0) {
+            result.addErrorMessage("Items with the EDIBLE or MEDICINAL category must have a $/Kg above 0.");
         }
 
         if (!result.isSuccess()) {

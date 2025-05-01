@@ -29,6 +29,20 @@ class ItemServiceTest {
     }
 
     @Test
+    void shouldNotSaveNameWithDelimiter() throws DataException {
+        Item item = new Item(0, "A,B", Category.EDIBLE, new BigDecimal("4.00"));
+        Result<Item> result = service.add(item);
+        assertFalse(result.isSuccess());
+    }
+
+    @Test
+    void shouldNotSaveWithoutCategory() throws DataException {
+        Item item = new Item(0, "Test Item", null, new BigDecimal("4.00"));
+        Result<Item> result = service.add(item);
+        assertFalse(result.isSuccess());
+    }
+
+    @Test
     void shouldNotSaveNullDollars() throws DataException {
         Item item = new Item(0, "Test Item", Category.EDIBLE, null);
         Result<Item> result = service.add(item);

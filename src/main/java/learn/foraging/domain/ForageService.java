@@ -7,6 +7,7 @@ import learn.foraging.data.ItemRepository;
 import learn.foraging.models.Forage;
 import learn.foraging.models.Forager;
 import learn.foraging.models.Item;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+@Service
 public class ForageService {
 
     private final ForageRepository forageRepository;
@@ -30,9 +32,9 @@ public class ForageService {
     public List<Forage> findByDate(LocalDate date) {
 
         Map<String, Forager> foragerMap = foragerRepository.findAll().stream()
-                .collect(Collectors.toMap(i -> i.getId(), i -> i));
+                .collect(Collectors.toMap(Forager::getId, i -> i));
         Map<Integer, Item> itemMap = itemRepository.findAll().stream()
-                .collect(Collectors.toMap(i -> i.getId(), i -> i));
+                .collect(Collectors.toMap(Item::getId, i -> i));
 
         List<Forage> result = forageRepository.findByDate(date);
         for (Forage forage : result) {
@@ -97,6 +99,11 @@ public class ForageService {
         }
 
         validateChildrenExist(forage, result);
+        if (!result.isSuccess()) {
+            return result;
+        }
+
+        validateNotDuplicate(forage, result);
 
         return result;
     }
@@ -143,6 +150,17 @@ public class ForageService {
 
         if (itemRepository.findById(forage.getItem().getId()) == null) {
             result.addErrorMessage("Item does not exist.");
+        }
+    }
+
+    private void validateNotDuplicate(Forage forage, Result<Forage> result) {
+
+        for (Forage dupeForage : forageRepository.findByDate(forage.getDate())) {
+            if (dupeForage.getForager().getId().equalsIgnoreCase(forage.getForager().getId()) &&
+            dupeForage.getItem().getId() == forage.getItem().getId()) {
+                result.addErrorMessage("Cannot add a duplicate Forage.");
+                return;
+            }
         }
     }
 }

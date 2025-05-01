@@ -9,10 +9,12 @@ import learn.foraging.models.Category;
 import learn.foraging.models.Forage;
 import learn.foraging.models.Forager;
 import learn.foraging.models.Item;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Component
 public class Controller {
 
     private final ForagerService foragerService;
@@ -45,6 +47,9 @@ public class Controller {
                 case VIEW_FORAGES_BY_DATE:
                     viewByDate();
                     break;
+                case VIEW_FORAGERS_BY_STATE:
+                    viewForagersByState();
+                    break;
                 case VIEW_ITEMS:
                     viewItems();
                     break;
@@ -52,19 +57,16 @@ public class Controller {
                     addForage();
                     break;
                 case ADD_FORAGER:
-                    view.displayStatus(false, "NOT IMPLEMENTED");
-                    view.enterToContinue();
+                    addForager();
                     break;
                 case ADD_ITEM:
                     addItem();
                     break;
                 case REPORT_KG_PER_ITEM:
-                    view.displayStatus(false, "NOT IMPLEMENTED");
-                    view.enterToContinue();
+                    reportKGPerItem();
                     break;
                 case REPORT_CATEGORY_VALUE:
-                    view.displayStatus(false, "NOT IMPLEMENTED");
-                    view.enterToContinue();
+                    reportCategoryValue();
                     break;
                 case GENERATE:
                     generate();
@@ -90,6 +92,14 @@ public class Controller {
         view.enterToContinue();
     }
 
+    private void viewForagersByState() {
+        view.displayHeader(MainMenuOption.VIEW_FORAGERS_BY_STATE.getMessage());
+        String state = view.getForagerState();
+        List<Forager> foragers = foragerService.findByState(state);
+        view.chooseForager(foragers);
+        view.enterToContinue();
+    }
+
     private void addForage() throws DataException {
         view.displayHeader(MainMenuOption.ADD_FORAGE.getMessage());
         Forager forager = getForager();
@@ -105,7 +115,7 @@ public class Controller {
         if (!result.isSuccess()) {
             view.displayStatus(false, result.getErrorMessages());
         } else {
-            String successMessage = String.format("Forage %s created.", result.getPayload().getId());
+            String successMessage = String.format("Forage %s created.", result.getPayload().getItem().getName());
             view.displayStatus(true, successMessage);
         }
     }
@@ -116,9 +126,32 @@ public class Controller {
         if (!result.isSuccess()) {
             view.displayStatus(false, result.getErrorMessages());
         } else {
-            String successMessage = String.format("Item %s created.", result.getPayload().getId());
+            String successMessage = String.format("Item %s created.", result.getPayload().getName());
             view.displayStatus(true, successMessage);
         }
+    }
+
+    private void addForager() throws DataException {
+        Forager forager = view.makeForager();
+        Result<Forager> result = foragerService.addForager(forager);
+        if (!result.isSuccess()) {
+            view.displayStatus(false, result.getErrorMessages());
+        } else {
+            String successMessage = String.format("Forager %s %s created.", result.getPayload().getFirstName(), result.getPayload().getLastName());
+            view.displayStatus(true, successMessage);
+        }
+    }
+
+    private void reportKGPerItem() {
+        LocalDate dayForaged = view.getForageDate();
+        List<Forage> forages = forageService.findByDate(dayForaged);
+        view.getKGPerForage(forages);
+    }
+
+    private void reportCategoryValue() {
+        LocalDate dayForaged = view.getForageDate();
+        List<Forage> forages = forageService.findByDate(dayForaged);
+        view.getCategoryValue(forages);
     }
 
     private void generate() throws DataException {

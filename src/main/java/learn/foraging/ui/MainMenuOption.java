@@ -4,13 +4,14 @@ public enum MainMenuOption {
 
     EXIT(0, "Exit", false),
     VIEW_FORAGES_BY_DATE(1, "View Forages By Date", false),
-    VIEW_ITEMS(2, "View Items", false),
-    ADD_FORAGE(3, "Add a Forage", false),
-    ADD_FORAGER(4, "Add a Forager", false),
-    ADD_ITEM(5, "Add an Item", false),
-    REPORT_KG_PER_ITEM(6, "Report: Kilograms of Item", false),
-    REPORT_CATEGORY_VALUE(7, "Report: Item Category Value", false),
-    GENERATE(8, "Generate Random Forages", true);
+    VIEW_FORAGERS_BY_STATE(2, "View Foragers By State", false),
+    VIEW_ITEMS(3, "View Items", false),
+    ADD_FORAGE(4, "Add a Forage", false),
+    ADD_FORAGER(5, "Add a Forager", false),
+    ADD_ITEM(6, "Add an Item", false),
+    REPORT_KG_PER_ITEM(7, "Report: Kilograms of Item", false),
+    REPORT_CATEGORY_VALUE(8, "Report: Item Category Value", false),
+    GENERATE(9, "Generate Random Forages", true);
 
     private int value;
     private String message;
